@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Biscuit International — Portfolio PMO Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root {
+  --bg: #f5f6f8;
+  --surface: #ffffff;
+  --surface2: #f0f2f5;
+  --border: rgba(0,0,0,0.08);
+  --border2: rgba(0,0,0,0.14);
+  --text: #1a1d23;
+  --muted: #8a8f9d;
+  --accent: #e63946;
+  --accent2: #4cc9f0;
+  --green: #2dd4a0;
+  --amber: #f59e0b;
+  --purple: #a78bfa;
+  --font-display: 'Syne', sans-serif;
+  --font-mono: 'DM Mono', monospace;
+  --font-body: 'DM Sans', sans-serif;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); color: var(--text); font-family: var(--font-body); font-size: 13px; min-height: 100vh; }
+
+/* HEADER */
+.header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 18px 28px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+}
+.header-left { display: flex; align-items: center; gap: 16px; }
+.logo-mark {
+  width: 32px; height: 32px; background: var(--accent);
+  border-radius: 6px; display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-display); font-weight: 800; font-size: 14px; color: white;
+}
+.header-title { font-family: var(--font-display); font-weight: 700; font-size: 15px; letter-spacing: .3px; }
+.header-sub { font-size: 11px; color: var(--muted); margin-top: 1px; font-family: var(--font-mono); }
+.header-right { display: flex; align-items: center; gap: 10px; }
+.period-badge {
+  font-family: var(--font-mono); font-size: 10px; color: var(--muted);
+  border: 1px solid var(--border2); border-radius: 4px; padding: 4px 10px;
+}
+
+/* PROJECT SELECTOR */
+.selector-bar {
+  display: flex; gap: 6px; padding: 14px 28px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface); overflow-x: auto;
+}
+.proj-btn {
+  display: flex; align-items: center; gap: 8px;
+  padding: 7px 14px; border-radius: 6px; border: 1px solid var(--border2);
+  background: transparent; color: var(--muted); cursor: pointer;
+  font-family: var(--font-body); font-size: 12px; font-weight: 500;
+  transition: all .15s; white-space: nowrap;
+}
+.proj-btn:hover { border-color: rgba(255,255,255,0.2); color: var(--text); }
+.proj-btn.active { background: var(--surface2); border-color: var(--accent); color: var(--text); }
+.proj-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+.proj-type { font-size: 10px; font-family: var(--font-mono); opacity: .6; }
+
+/* MAIN LAYOUT */
+.main { padding: 20px 28px; display: flex; flex-direction: column; gap: 16px; }
+
+/* KPI ROW */
+.kpi-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; }
+.kpi-card {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
+  padding: 14px 16px;
+}
+.kpi-label { font-size: 10px; color: var(--muted); font-family: var(--font-mono); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 8px; }
+.kpi-val { font-family: var(--font-display); font-weight: 700; font-size: 22px; line-height: 1; }
+.kpi-sub { font-size: 11px; color: var(--muted); margin-top: 5px; display: flex; align-items: center; gap: 4px; }
+.delta { font-family: var(--font-mono); font-size: 10px; padding: 2px 6px; border-radius: 3px; }
+.delta.pos { background: rgba(45,212,160,.15); color: var(--green); }
+.delta.neg { background: rgba(230,57,70,.15); color: var(--accent); }
+.delta.warn { background: rgba(245,158,11,.15); color: var(--amber); }
+
+/* ALERT BANNER */
+.alert-banner {
+  background: rgba(230,57,70,.08); border: 1px solid rgba(230,57,70,.3);
+  border-radius: 8px; padding: 10px 16px;
+  display: flex; align-items: center; gap: 12px; font-size: 12px;
+}
+.alert-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); flex-shrink: 0;
+  animation: pulse 1.5s infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
+.alert-text { color: var(--text); }
+.alert-text strong { color: var(--accent); }
+
+/* CHARTS GRID */
+.charts-grid { display: grid; grid-template-columns: 1.6fr 1fr; gap: 12px; }
+.charts-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+
+.chart-card {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
+  padding: 16px;
+}
+.chart-title {
+  font-family: var(--font-display); font-weight: 600; font-size: 12px;
+  color: var(--text); margin-bottom: 4px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.chart-desc { font-size: 11px; color: var(--muted); margin-bottom: 14px; font-family: var(--font-mono); }
+.chart-wrap { position: relative; }
+
+/* GAUGE */
+.gauge-wrap { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 8px 0; }
+.gauge-val { font-family: var(--font-display); font-weight: 800; font-size: 32px; margin-top: -8px; }
+.gauge-label { font-size: 11px; color: var(--muted); margin-top: 4px; }
+.gauge-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; width: 100%; }
+.gauge-mini { background: var(--surface2); border-radius: 6px; padding: 10px 12px; }
+.gauge-mini-label { font-size: 10px; color: var(--muted); font-family: var(--font-mono); margin-bottom: 4px; }
+.gauge-mini-val { font-family: var(--font-display); font-weight: 700; font-size: 16px; }
+
+/* PHASE TABLE */
+.phase-table { width: 100%; border-collapse: collapse; margin-top: 0; }
+.phase-table th { font-size: 10px; font-family: var(--font-mono); color: var(--muted); text-transform: uppercase;
+  letter-spacing: .4px; padding: 0 8px 8px; text-align: left; border-bottom: 1px solid var(--border); }
+.phase-table td { padding: 9px 8px; border-bottom: 1px solid var(--border); font-size: 12px; vertical-align: middle; }
+.phase-table tr:last-child td { border-bottom: none; }
+.status-pill { font-size: 10px; font-family: var(--font-mono); padding: 2px 8px; border-radius: 3px; font-weight: 500; }
+.s-done { background: rgba(45,212,160,.15); color: var(--green); }
+.s-active { background: rgba(76,201,240,.15); color: var(--accent2); }
+.s-warn { background: rgba(245,158,11,.15); color: var(--amber); }
+.s-pending { background: rgba(107,114,128,.15); color: var(--muted); }
+.prog-bar-bg { background: var(--surface2); border-radius: 2px; height: 4px; width: 80px; }
+.prog-bar-fill { height: 4px; border-radius: 2px; }
+
+/* FOOTER */
+.footer {
+  padding: 12px 28px; border-top: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+  font-size: 10px; color: var(--muted); font-family: var(--font-mono);
+  background: var(--surface);
+}
+.pv-badge { color: var(--accent); font-weight: 500; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-left">
+    <div class="logo-mark">PV</div>
+    <div>
+      <div class="header-title">Portfolio PMO Dashboard</div>
+      <div class="header-sub">Biscuit International — Project Advantage</div>
+    </div>
+  </div>
+  <div class="header-right">
+    <div class="period-badge" id="current-date">Chargement...</div>
+    <div class="period-badge">LRP 2024–2028</div>
+  </div>
+</div>
+
+<div class="selector-bar" id="selector"></div>
+
+<div class="main">
+  <div class="kpi-row" id="kpi-row"></div>
+  <div id="alert-zone"></div>
+  <div class="charts-grid">
+    <div class="chart-card">
+      <div class="chart-title">Courbe en S — Budget vs Réalisé vs Engagé <span style="font-size:10px;color:var(--muted);font-family:var(--font-mono)" id="s-curve-legend"></span></div>
+      <div class="chart-desc" id="s-curve-desc">Cumul mensuel (k€)</div>
+      <div class="chart-wrap" style="height:200px"><canvas id="sCurveChart"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Earned Value</div>
+      <div class="chart-desc" id="ev-desc">CPI · SPI · Avancement physique</div>
+      <div class="gauge-wrap">
+        <canvas id="gaugeChart" width="160" height="80"></canvas>
+        <div class="gauge-val" id="cpi-val">—</div>
+        <div class="gauge-label">Cost Performance Index</div>
+        <div class="gauge-row">
+          <div class="gauge-mini">
+            <div class="gauge-mini-label">SPI</div>
+            <div class="gauge-mini-val" id="spi-val">—</div>
+          </div>
+          <div class="gauge-mini">
+            <div class="gauge-mini-label">Avancement physique</div>
+            <div class="gauge-mini-val" id="phys-val">—</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="charts-grid">
+    <div class="chart-card">
+      <div class="chart-title">Cash Burnrate mensuel <span style="font-size:10px;color:var(--accent);font-family:var(--font-mono)" id="burnrate-alert-label"></span></div>
+      <div class="chart-desc">Décaissements réels vs seuil planifié (k€/mois)</div>
+      <div class="chart-wrap" style="height:160px"><canvas id="burnrateChart"></canvas></div>
+    </div>
+    <div class="chart-card" style="grid-column: span 1;">
+      <div class="chart-title">Avancement par phase (Stage & Gates)</div>
+      <div class="chart-desc" id="phase-project-name">—</div>
+      <table class="phase-table" id="phase-table"></table>
+    </div>
+  </div>
+</div>
+
+<div class="footer">
+  <span>Données actualisées en temps réel via <span class="pv-badge">Project Advantage</span></span>
+  <span>Export Power BI · SAP FICO (prévu) · Hanaplan (prévu)</span>
+</div>
+
+<script>
+const projects = [
+  {
+    id: "capex-bcn",
+    name: "CAPEX — Ligne Barcelone",
+    type: "CAPEX",
+    color: "#e63946",
+    cluster: "Europe Sud",
+    budget: 3200,
+    status: "En cours — Alerte burnrate",
+    alertMsg: "<strong>Alerte burnrate</strong> : décaissement mars +38% vs planifié. Paiement fournisseur équipement anticipé. Impact sur trésorerie T2.",
+    hasAlert: true,
+    kpis: {
+      budget: "3 200 k€", engage: "2 140 k€", realise: "1 890 k€",
+      avancement: "52%", reste: "1 310 k€"
+    },
+    cpi: 0.88, spi: 0.94, phys: 52,
+    sCurve: {
+      labels: ["Jan","Fév","Mar","Avr","Mai","Jun","Jul","Aoû","Sep","Oct","Nov","Déc"],
+      planned:  [0,180,420,720,1050,1420,1780,2100,2430,2720,2980,3200],
+      earned:   [0,165,380,640,960,1310,1660,1890,null,null,null,null],
+      actual:   [0,190,450,720,1080,1420,1760,1890,null,null,null,null],
+    },
+    burnrate: {
+      labels: ["Jan","Fév","Mar","Avr","Mai","Jun","Jul","Aoû"],
+      planned: [180,240,300,300,330,370,360,320],
+      actual:  [190,260,415,280,300,null,null,null],
+    },
+    phases: [
+      {name:"Gate 0 — Faisabilité", prog:100, status:"done", fin:"Jan 2025"},
+      {name:"Gate 1 — Business case", prog:100, status:"done", fin:"Mar 2025"},
+      {name:"Gate 2 — Ingénierie détail", prog:100, status:"done", fin:"Jun 2025"},
+      {name:"Gate 3 — Procurement", prog:78, status:"warn", fin:"Nov 2025 (retard)"},
+      {name:"Gate 4 — Installation", prog:0, status:"pending", fin:"Mar 2026"},
+      {name:"Gate 5 — Réception", prog:0, status:"pending", fin:"Jun 2026"},
+    ]
+  },
+  {
+    id: "it-erp",
+    name: "IT — Migration ERP Europe",
+    type: "IT",
+    color: "#4cc9f0",
+    cluster: "Transverse",
+    budget: 1850,
+    status: "Dans les délais",
+    alertMsg: null,
+    hasAlert: false,
+    kpis: {
+      budget: "1 850 k€", engage: "980 k€", realise: "860 k€",
+      avancement: "46%", reste: "990 k€"
+    },
+    cpi: 1.02, spi: 1.01, phys: 46,
+    sCurve: {
+      labels: ["Jan","Fév","Mar","Avr","Mai","Jun","Jul","Aoû","Sep","Oct","Nov","Déc"],
+      planned:  [0,100,240,420,620,850,1060,1280,1490,1650,1780,1850],
+      earned:   [0,105,252,438,640,870,1060,null,null,null,null,null],
+      actual:   [0,100,245,430,625,855,860,null,null,null,null,null],
+    },
+    burnrate: {
+      labels: ["Jan","Fév","Mar","Avr","Mai","Jun","Jul"],
+      planned: [100,140,180,200,230,210,210],
+      actual:  [100,145,185,195,235,205,null],
+    },
+    phases: [
+      {name:"Phase 1 — Cadrage & spec", prog:100, status:"done", fin:"Fév 2025"},
+      {name:"Phase 2 — Paramétrage SAP", prog:100, status:"done", fin:"Avr 2025"},
+      {name:"Phase 3 — Recette & tests", prog:85, status:"active", fin:"Sep 2025"},
+      {name:"Phase 4 — Formation", prog:10, status:"pending", fin:"Nov 2025"},
+      {name:"Phase 5 — Go-live cluster FR", prog:0, status:"pending", fin:"Déc 2025"},
+    ]
+  },
+  {
+    id: "transfo-supply",
+    name: "Transfo — Supply Chain FR",
+    type: "Transformation",
+    color: "#2dd4a0",
+    cluster: "France",
+    budget: 680,
+    status: "Dans les délais",
+    alertMsg: null,
+    hasAlert: false,
+    kpis: {
+      budget: "680 k€", engage: "210 k€", realise: "185 k€",
+      avancement: "27%", reste: "495 k€"
+    },
+    cpi: 1.05, spi: 0.98, phys: 27,
+    sCurve: {
+      labels: ["Jan","Fév","Mar","Avr","Mai","Jun","Jul","Aoû","Sep","Oct","Nov","Déc"],
+      planned:  [0,40,95,175,260,360,450,530,590,630,660,680],
+      earned:   [0,42,98,178,null,null,null,null,null,null,null,null],
+      actual:   [0,40,92,185,null,null,null,null,null,null,null,null],
+    },
+    burnrate: {
+      labels: ["Jan","Fév","Mar","Avr"],
+      planned: [40,55,80,85],
+      actual:  [40,52,93,null],
+    },
+    phases: [
+      {name:"Diagnostic & cartographie", prog:100, status:"done", fin:"Fév 2025"},
+      {name:"Définition cible & roadmap", prog:100, status:"done", fin:"Mar 2025"},
+      {name:"Pilote site Amiens", prog:35, status:"active", fin:"Jul 2025"},
+      {name:"Déploiement national", prog:0, status:"pending", fin:"Nov 2025"},
+    ]
+  },
+  {
+    id: "orga-cluster",
+    name: "Orga — Cluster Europe Est",
+    type: "Organisation",
+    color: "#a78bfa",
+    cluster: "Europe Est",
+    budget: 420,
+    status: "Risque délai",
+    alertMsg: "<strong>Risque délai</strong> : ressources RH partagées avec projet IT ERP. Décalage potentiel Gate 2 de 6 semaines.",
+    hasAlert: true,
+    kpis: {
+      budget: "420 k€", engage: "88 k€", realise: "72 k€",
+      avancement: "17%", reste: "348 k€"
+    },
+    cpi: 0.95, spi: 0.82, phys: 17,
+    sCurve: {
+      labels: ["Jan","Fév","Mar","Avr","Mai","Jun","Jul","Aoû","Sep","Oct","Nov","Déc"],
+      planned:  [0,30,75,140,210,280,340,385,405,415,420,420],
+      earned:   [0,25,62,118,null,null,null,null,null,null,null,null],
+      actual:   [0,28,68,72,null,null,null,null,null,null,null,null],
+    },
+    burnrate: {
+      labels: ["Jan","Fév","Mar","Avr"],
+      planned: [30,45,65,70],
+      actual:  [28,40,4,null],
+    },
+    phases: [
+      {name:"Gate 0 — Diagnostic org.", prog:100, status:"done", fin:"Jan 2025"},
+      {name:"Gate 1 — Design cible", prog:72, status:"warn", fin:"Mai 2025 (risque)"},
+      {name:"Gate 2 — Validation CODIR", prog:0, status:"pending", fin:"Jun 2025"},
+      {name:"Gate 3 — Déploiement cluster", prog:0, status:"pending", fin:"Oct 2025"},
+    ]
+  }
+];
+
+let currentIdx = 0;
+let sCurveChart, burnrateChart, gaugeChart;
+
+function fmt(n){ return n !== null ? n.toLocaleString('fr-FR') : ''; }
+
+function renderSelector(){
+  const bar = document.getElementById('selector');
+  bar.innerHTML = '';
+  projects.forEach((p,i)=>{
+    const btn = document.createElement('button');
+    btn.className = 'proj-btn' + (i===currentIdx?' active':'');
+    btn.innerHTML = `<span class="proj-dot" style="background:${p.color}"></span>
+      <span>${p.name}</span>
+      <span class="proj-type">${p.cluster}</span>`;
+    btn.onclick = ()=>{ currentIdx=i; render(); };
+    bar.appendChild(btn);
+  });
+}
+
+function renderKPIs(){
+  const p = projects[currentIdx];
+  const kpis = [
+    {label:"Budget total", val:p.kpis.budget, sub:"Enveloppe allouée", delta:null},
+    {label:"Montant engagé", val:p.kpis.engage, sub:"Commandes & contrats", delta:null},
+    {label:"Réalisé (coût réel)", val:p.kpis.realise, sub:"Dépenses comptabilisées", delta:null},
+    {label:"Avancement physique", val:p.kpis.avancement, sub:"Jalons validés", delta: p.cpi<1?{label:"CPI "+p.cpi.toFixed(2), cls:"neg"}:{label:"CPI "+p.cpi.toFixed(2), cls:"pos"}},
+    {label:"Reste à dépenser", val:p.kpis.reste, sub:"Budget disponible", delta: p.spi<0.9?{label:"SPI "+p.spi.toFixed(2),cls:"warn"}:null},
+  ];
+  const row = document.getElementById('kpi-row');
+  row.innerHTML = kpis.map(k=>`
+    <div class="kpi-card">
+      <div class="kpi-label">${k.label}</div>
+      <div class="kpi-val">${k.val}</div>
+      <div class="kpi-sub">${k.sub}${k.delta?` <span class="delta ${k.delta.cls}">${k.delta.label}</span>`:''}</div>
+    </div>`).join('');
+}
+
+function renderAlert(){
+  const p = projects[currentIdx];
+  const z = document.getElementById('alert-zone');
+  if(p.hasAlert){
+    z.innerHTML = `<div class="alert-banner"><div class="alert-dot"></div><div class="alert-text">${p.alertMsg}</div></div>`;
+  } else { z.innerHTML=''; }
+}
+
+function renderSCurve(){
+  const p = projects[currentIdx];
+  const d = p.sCurve;
+  if(sCurveChart) sCurveChart.destroy();
+  const ctx = document.getElementById('sCurveChart').getContext('2d');
+  sCurveChart = new Chart(ctx,{
+    type:'line',
+    data:{
+      labels: d.labels,
+      datasets:[
+        {label:'Planifié (BCWS)', data:d.planned, borderColor:'rgba(255,255,255,0.25)',
+          backgroundColor:'rgba(255,255,255,0.04)', borderWidth:2, pointRadius:0,
+          tension:.4, fill:true, borderDash:[6,3]},
+        {label:'Earned Value (BCWP)', data:d.earned, borderColor:p.color,
+          backgroundColor:'transparent', borderWidth:2.5, pointRadius:3,
+          pointBackgroundColor:p.color, tension:.4, spanGaps:false},
+        {label:'Coût réel (ACWP)', data:d.actual, borderColor:'rgba(245,158,11,.8)',
+          backgroundColor:'transparent', borderWidth:2, pointRadius:3,
+          pointBackgroundColor:'rgba(245,158,11,.8)', tension:.4, spanGaps:false},
+      ]
+    },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{
+        legend:{display:true, position:'top',
+          labels:{color:'rgba(0,0,0,0.55)', font:{family:'DM Mono',size:10}, boxWidth:20, padding:12}},
+        tooltip:{
+          backgroundColor:'rgba(255,255,255,0.98)', borderColor:'rgba(0,0,0,0.1)',
+          borderWidth:1, titleFont:{family:'Syne',size:12}, bodyFont:{family:'DM Mono',size:11},
+          callbacks:{label: ctx=>' '+ctx.dataset.label+': '+fmt(ctx.parsed.y)+' k€'}
+        }
+      },
+      scales:{
+        x:{grid:{color:'rgba(0,0,0,0.05)'}, ticks:{color:'rgba(0,0,0,0.55)',font:{family:'DM Mono',size:10}}},
+        y:{grid:{color:'rgba(0,0,0,0.05)'}, ticks:{color:'rgba(0,0,0,0.55)',font:{family:'DM Mono',size:10},
+          callback:v=>v.toLocaleString('fr-FR')+' k'}}
+      }
+    }
+  });
+}
+
+function renderBurnrate(){
+  const p = projects[currentIdx];
+  const d = p.burnrate;
+  if(burnrateChart) burnrateChart.destroy();
+  const ctx = document.getElementById('burnrateChart').getContext('2d');
+  const alertLabel = document.getElementById('burnrate-alert-label');
+  const over = d.actual.some((v,i)=>v!==null && v > d.planned[i]*1.15);
+  alertLabel.textContent = over ? '⚠ Dépassement seuil détecté' : '';
+
+  const barColors = d.actual.map((v,i)=>{
+    if(v===null) return 'rgba(0,0,0,0)';
+    return v > d.planned[i]*1.15 ? 'rgba(230,57,70,.85)' : p.color+'cc';
+  });
+
+  burnrateChart = new Chart(ctx,{
+    type:'bar',
+    data:{
+      labels: d.labels,
+      datasets:[
+        {label:'Seuil planifié', data:d.planned, type:'line',
+          borderColor:'rgba(0,0,0,0.18)', borderWidth:1.5, pointRadius:0,
+          borderDash:[5,4], fill:false},
+        {label:'Burnrate réel', data:d.actual,
+          backgroundColor:barColors, borderRadius:4, borderSkipped:false},
+      ]
+    },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{
+        legend:{display:true, position:'top',
+          labels:{color:'rgba(0,0,0,0.55)', font:{family:'DM Mono',size:10}, boxWidth:20, padding:12}},
+        tooltip:{
+          backgroundColor:'rgba(255,255,255,0.98)', borderColor:'rgba(0,0,0,0.1)',
+          borderWidth:1, bodyFont:{family:'DM Mono',size:11},
+          callbacks:{label: ctx=>' '+ctx.dataset.label+': '+fmt(ctx.parsed.y)+' k€'}
+        }
+      },
+      scales:{
+        x:{grid:{color:'rgba(0,0,0,0.05)'}, ticks:{color:'rgba(0,0,0,0.55)',font:{family:'DM Mono',size:10}}},
+        y:{grid:{color:'rgba(0,0,0,0.05)'}, ticks:{color:'rgba(0,0,0,0.55)',font:{family:'DM Mono',size:10},
+          callback:v=>v+' k'}}
+      }
+    }
+  });
+}
+
+function renderGauge(){
+  const p = projects[currentIdx];
+  if(gaugeChart) gaugeChart.destroy();
+  const ctx = document.getElementById('gaugeChart').getContext('2d');
+  const cpi = p.cpi;
+  const angle = Math.min(Math.max((cpi-0.5)/1.0, 0), 1);
+  const color = cpi>=1 ? '#2dd4a0' : cpi>=0.9 ? '#f59e0b' : '#e63946';
+
+  gaugeChart = new Chart(ctx,{
+    type:'doughnut',
+    data:{
+      datasets:[{
+        data:[angle*100, (1-angle)*100, 100],
+        backgroundColor:[color,'rgba(0,0,0,0.06)','transparent'],
+        borderWidth:0, circumference:180, rotation:270,
+      }]
+    },
+    options:{responsive:false, cutout:'78%', plugins:{legend:{display:false}, tooltip:{enabled:false}}}
+  });
+
+  document.getElementById('cpi-val').textContent = cpi.toFixed(2);
+  document.getElementById('cpi-val').style.color = color;
+  document.getElementById('spi-val').textContent = p.spi.toFixed(2);
+  document.getElementById('spi-val').style.color = p.spi>=1?'#2dd4a0':p.spi>=0.9?'#f59e0b':'#e63946';
+  document.getElementById('phys-val').textContent = p.phys+'%';
+}
+
+function renderPhases(){
+  const p = projects[currentIdx];
+  document.getElementById('phase-project-name').textContent = p.name;
+  const statusMap = {done:'s-done',active:'s-active',warn:'s-warn',pending:'s-pending'};
+  const labelMap = {done:'Terminé',active:'En cours',warn:'Attention',pending:'À venir'};
+  const table = document.getElementById('phase-table');
+  table.innerHTML = `<thead><tr><th>Phase</th><th>Prog.</th><th>Statut</th><th>Échéance</th></tr></thead><tbody>`
+    + p.phases.map(ph=>`
+      <tr>
+        <td>${ph.name}</td>
+        <td><div class="prog-bar-bg"><div class="prog-bar-fill" style="width:${ph.prog}%;background:${ph.status==='warn'?'#f59e0b':ph.status==='done'?'#2dd4a0':ph.status==='active'?'#4cc9f0':'#374151'}"></div></div></td>
+        <td><span class="status-pill ${statusMap[ph.status]}">${labelMap[ph.status]}</span></td>
+        <td style="color:var(--muted);font-family:var(--font-mono);font-size:11px">${ph.fin}</td>
+      </tr>`).join('')
+    + '</tbody>';
+}
+
+function render(){
+  renderSelector();
+  renderKPIs();
+  renderAlert();
+  renderSCurve();
+  renderBurnrate();
+  renderGauge();
+  renderPhases();
+}
+
+document.getElementById('current-date').textContent = new Date().toLocaleDateString('fr-FR',{day:'2-digit',month:'long',year:'numeric'});
+render();
+</script>
+ <!-- POWER BI INTEGRATION GUIDE --> <div style="margin:0;padding:20px 28px 28px;background:#fff;border-top:1px solid rgba(0,0,0,0.08)">   <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:13px;color:#1a1d23;margin-bottom:4px">Intégration dans Project Advantage / Power BI</div>   <div style="font-family:'DM Mono',monospace;font-size:10px;color:#8a8f9d;margin-bottom:16px">3 options selon le contexte de démo</div>   <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px">     <div style="background:#f5f6f8;border:1px solid rgba(0,0,0,0.08);border-radius:10px;padding:14px">       <div style="font-size:10px;font-family:'DM Mono',monospace;color:#e63946;font-weight:500;margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px">Option 1 — Recommandée démo</div>       <div style="font-size:12px;font-weight:500;color:#1a1d23;margin-bottom:6px">Fichier HTML local dans navigateur</div>       <div style="font-size:11px;color:#8a8f9d;line-height:1.6">Ouvrir ce fichier dans Chrome pendant la démo. Aucune dépendance, fonctionne hors ligne, plein écran possible. Idéal pour montrer la sortie "telle que Mathieu la verrait".</div>     </div>     <div style="background:#f5f6f8;border:1px solid rgba(0,0,0,0.08);border-radius:10px;padding:14px">       <div style="font-size:10px;font-family:'DM Mono',monospace;color:#185FA5;font-weight:500;margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px">Option 2 — Intégration Power BI</div>       <div style="font-size:12px;font-weight:500;color:#1a1d23;margin-bottom:6px">Custom visual "HTML Content"</div>       <div style="font-size:11px;color:#8a8f9d;line-height:1.6">Dans Power BI Desktop : ajouter le visual <strong style="color:#1a1d23">HTML Content</strong> (AppSource). Créer une mesure DAX retournant le code HTML. Le visual le rend nativement dans le rapport .pbix.</div>     </div>     <div style="background:#f5f6f8;border:1px solid rgba(0,0,0,0.08);border-radius:10px;padding:14px">       <div style="font-size:10px;font-family:'DM Mono',monospace;color:#3B6D11;font-weight:500;margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px">Option 3 — Portail Project Advantage</div>       <div style="font-size:12px;font-weight:500;color:#1a1d23;margin-bottom:6px">Iframe dans l'application PA</div>       <div style="font-size:11px;color:#8a8f9d;line-height:1.6">Héberger ce fichier sur un serveur interne ou SharePoint. L'intégrer via iframe dans Project Advantage comme widget de tableau de bord. URL configurable par projet.</div>     </div>   </div> </div> 
+</body>
+</html>
