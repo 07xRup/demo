@@ -1,544 +1,714 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Biscuit International — Portfolio PMO Dashboard</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>PAPEGO — Porfolio de Iniciativas · Planview</title>
+<link href="https://fonts.googleapis.com/css2?family=Segoe+UI:wght@300;400;600;700&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
 :root {
-  --bg: #f5f6f8;
-  --surface: #ffffff;
-  --surface2: #f0f2f5;
-  --border: rgba(0,0,0,0.08);
-  --border2: rgba(0,0,0,0.14);
-  --text: #1a1d23;
-  --muted: #8a8f9d;
-  --accent: #e63946;
-  --accent2: #4cc9f0;
-  --green: #2dd4a0;
-  --amber: #f59e0b;
-  --purple: #a78bfa;
-  --font-display: 'Syne', sans-serif;
-  --font-mono: 'DM Mono', monospace;
-  --font-body: 'DM Sans', sans-serif;
+  --bg:        #f3f4f8;
+  --surface:   #ffffff;
+  --border:    #e1e5ef;
+  --text:      #252c3e;
+  --muted:     #8993ab;
+  --accent:    #0078d4;
+  --accent2:   #106ebe;
+  --green:     #107c10;
+  --amber:     #ca5010;
+  --red:       #a4262c;
+  --green-bg:  #dff6dd;
+  --amber-bg:  #fed9cc;
+  --red-bg:    #fde7e9;
+  --blue-bg:   #deecf9;
+  --font:      'DM Sans', 'Segoe UI', sans-serif;
+  --radius:    4px;
+  --shadow:    0 1px 4px rgba(0,0,0,0.08);
 }
-
 * { box-sizing: border-box; margin: 0; padding: 0; }
-body { background: var(--bg); color: var(--text); font-family: var(--font-body); font-size: 13px; min-height: 100vh; }
+body { background: var(--bg); font-family: var(--font); font-size: 13px; color: var(--text); }
 
-/* HEADER */
-.header {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 18px 28px;
-  border-bottom: 1px solid var(--border);
-  background: var(--surface);
+/* ── TOP BAR ── */
+.topbar {
+  background: var(--accent);
+  color: #fff;
+  padding: 0 24px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  user-select: none;
 }
-.header-left { display: flex; align-items: center; gap: 16px; }
-.logo-mark {
-  width: 32px; height: 32px; background: var(--accent);
-  border-radius: 6px; display: flex; align-items: center; justify-content: center;
-  font-family: var(--font-display); font-weight: 800; font-size: 14px; color: white;
-}
-.header-title { font-family: var(--font-display); font-weight: 700; font-size: 15px; letter-spacing: .3px; }
-.header-sub { font-size: 11px; color: var(--muted); margin-top: 1px; font-family: var(--font-mono); }
-.header-right { display: flex; align-items: center; gap: 10px; }
-.period-badge {
-  font-family: var(--font-mono); font-size: 10px; color: var(--muted);
-  border: 1px solid var(--border2); border-radius: 4px; padding: 4px 10px;
-}
-
-/* PROJECT SELECTOR */
-.selector-bar {
-  display: flex; gap: 6px; padding: 14px 28px;
-  border-bottom: 1px solid var(--border);
-  background: var(--surface); overflow-x: auto;
-}
-.proj-btn {
+.topbar-left { display: flex; align-items: center; gap: 14px; }
+.topbar-brand {
+  font-size: 13px; font-weight: 700; letter-spacing: 0.3px;
   display: flex; align-items: center; gap: 8px;
-  padding: 7px 14px; border-radius: 6px; border: 1px solid var(--border2);
-  background: transparent; color: var(--muted); cursor: pointer;
-  font-family: var(--font-body); font-size: 12px; font-weight: 500;
-  transition: all .15s; white-space: nowrap;
 }
-.proj-btn:hover { border-color: rgba(255,255,255,0.2); color: var(--text); }
-.proj-btn.active { background: var(--surface2); border-color: var(--accent); color: var(--text); }
-.proj-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
-.proj-type { font-size: 10px; font-family: var(--font-mono); opacity: .6; }
+.topbar-brand .dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: rgba(255,255,255,0.5);
+}
+.topbar-sep { opacity: 0.3; font-size: 18px; font-weight: 100; }
+.topbar-title { font-size: 13px; opacity: 0.9; font-weight: 400; }
+.topbar-right { display: flex; align-items: center; gap: 16px; font-size: 11px; opacity: 0.85; }
+.topbar-right .chip {
+  background: rgba(255,255,255,0.15);
+  padding: 3px 10px; border-radius: 20px;
+  font-weight: 500;
+}
 
-/* MAIN LAYOUT */
-.main { padding: 20px 28px; display: flex; flex-direction: column; gap: 16px; }
+/* ── SLICER BAR ── */
+.slicer-bar {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 10px 24px;
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.slicer-group { display: flex; align-items: center; gap: 6px; }
+.slicer-label {
+  font-size: 10px; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 0.8px; color: var(--muted);
+  white-space: nowrap;
+}
+.slicer-btn {
+  border: 1px solid var(--border);
+  background: var(--bg);
+  border-radius: 20px;
+  padding: 3px 10px;
+  font-size: 11px;
+  font-family: var(--font);
+  cursor: pointer;
+  color: var(--text);
+  transition: all 0.15s;
+  font-weight: 500;
+}
+.slicer-btn:hover { border-color: var(--accent); color: var(--accent); }
+.slicer-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+.slicer-sep { width: 1px; height: 20px; background: var(--border); }
+.reset-btn {
+  margin-left: auto;
+  border: none; background: none;
+  font-size: 11px; color: var(--muted);
+  cursor: pointer; font-family: var(--font);
+  display: flex; align-items: center; gap: 4px;
+}
+.reset-btn:hover { color: var(--accent); }
 
-/* KPI ROW */
+/* ── MAIN GRID ── */
+.main { padding: 16px 24px; display: flex; flex-direction: column; gap: 14px; }
+
+/* ── KPI ROW ── */
 .kpi-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; }
 .kpi-card {
-  background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
-  padding: 14px 16px;
-}
-.kpi-label { font-size: 10px; color: var(--muted); font-family: var(--font-mono); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 8px; }
-.kpi-val { font-family: var(--font-display); font-weight: 700; font-size: 22px; line-height: 1; }
-.kpi-sub { font-size: 11px; color: var(--muted); margin-top: 5px; display: flex; align-items: center; gap: 4px; }
-.delta { font-family: var(--font-mono); font-size: 10px; padding: 2px 6px; border-radius: 3px; }
-.delta.pos { background: rgba(45,212,160,.15); color: var(--green); }
-.delta.neg { background: rgba(230,57,70,.15); color: var(--accent); }
-.delta.warn { background: rgba(245,158,11,.15); color: var(--amber); }
-
-/* ALERT BANNER */
-.alert-banner {
-  background: rgba(230,57,70,.08); border: 1px solid rgba(230,57,70,.3);
-  border-radius: 8px; padding: 10px 16px;
-  display: flex; align-items: center; gap: 12px; font-size: 12px;
-}
-.alert-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); flex-shrink: 0;
-  animation: pulse 1.5s infinite; }
-@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
-.alert-text { color: var(--text); }
-.alert-text strong { color: var(--accent); }
-
-/* CHARTS GRID */
-.charts-grid { display: grid; grid-template-columns: 1.6fr 1fr; gap: 12px; }
-.charts-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
-
-.chart-card {
-  background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
-  padding: 16px;
-}
-.chart-title {
-  font-family: var(--font-display); font-weight: 600; font-size: 12px;
-  color: var(--text); margin-bottom: 4px;
-  display: flex; align-items: center; justify-content: space-between;
-}
-.chart-desc { font-size: 11px; color: var(--muted); margin-bottom: 14px; font-family: var(--font-mono); }
-.chart-wrap { position: relative; }
-
-/* GAUGE */
-.gauge-wrap { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 8px 0; }
-.gauge-val { font-family: var(--font-display); font-weight: 800; font-size: 32px; margin-top: -8px; }
-.gauge-label { font-size: 11px; color: var(--muted); margin-top: 4px; }
-.gauge-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; width: 100%; }
-.gauge-mini { background: var(--surface2); border-radius: 6px; padding: 10px 12px; }
-.gauge-mini-label { font-size: 10px; color: var(--muted); font-family: var(--font-mono); margin-bottom: 4px; }
-.gauge-mini-val { font-family: var(--font-display); font-weight: 700; font-size: 16px; }
-
-/* PHASE TABLE */
-.phase-table { width: 100%; border-collapse: collapse; margin-top: 0; }
-.phase-table th { font-size: 10px; font-family: var(--font-mono); color: var(--muted); text-transform: uppercase;
-  letter-spacing: .4px; padding: 0 8px 8px; text-align: left; border-bottom: 1px solid var(--border); }
-.phase-table td { padding: 9px 8px; border-bottom: 1px solid var(--border); font-size: 12px; vertical-align: middle; }
-.phase-table tr:last-child td { border-bottom: none; }
-.status-pill { font-size: 10px; font-family: var(--font-mono); padding: 2px 8px; border-radius: 3px; font-weight: 500; }
-.s-done { background: rgba(45,212,160,.15); color: var(--green); }
-.s-active { background: rgba(76,201,240,.15); color: var(--accent2); }
-.s-warn { background: rgba(245,158,11,.15); color: var(--amber); }
-.s-pending { background: rgba(107,114,128,.15); color: var(--muted); }
-.prog-bar-bg { background: var(--surface2); border-radius: 2px; height: 4px; width: 80px; }
-.prog-bar-fill { height: 4px; border-radius: 2px; }
-
-/* FOOTER */
-.footer {
-  padding: 12px 28px; border-top: 1px solid var(--border);
-  display: flex; align-items: center; justify-content: space-between;
-  font-size: 10px; color: var(--muted); font-family: var(--font-mono);
   background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  box-shadow: var(--shadow);
+  border-left: 3px solid var(--accent);
+  position: relative;
 }
-.pv-badge { color: var(--accent); font-weight: 500; }
+.kpi-card.g { border-left-color: var(--green); }
+.kpi-card.a { border-left-color: var(--amber); }
+.kpi-card.r { border-left-color: var(--red); }
+.kpi-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; color: var(--muted); margin-bottom: 8px; }
+.kpi-val { font-size: 26px; font-weight: 700; line-height: 1; color: var(--text); }
+.kpi-val sub { font-size: 13px; font-weight: 500; color: var(--muted); }
+.kpi-sub { font-size: 10px; color: var(--muted); margin-top: 5px; }
+.kpi-badge {
+  position: absolute; top: 10px; right: 10px;
+  font-size: 9px; font-weight: 700;
+  padding: 2px 7px; border-radius: 20px;
+  text-transform: uppercase; letter-spacing: 0.5px;
+}
+.badge-g { background: var(--green-bg); color: var(--green); }
+.badge-a { background: var(--amber-bg); color: var(--amber); }
+.badge-r { background: var(--red-bg);   color: var(--red); }
+.badge-b { background: var(--blue-bg);  color: var(--accent); }
+
+/* ── MID GRID ── */
+.mid-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+
+/* ── CARDS ── */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+  box-shadow: var(--shadow);
+}
+.card-hd {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 14px; padding-bottom: 10px;
+  border-bottom: 1px solid var(--border);
+}
+.card-title {
+  font-size: 11px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.8px; color: var(--muted);
+}
+.card-count { font-size: 10px; color: var(--muted); }
+.chart-wrap { height: 180px; position: relative; }
+
+/* ── TABLE CARD ── */
+.table-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+.table-card .card-hd { padding: 12px 16px 10px; margin: 0; }
+.table-scroll { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; }
+thead th {
+  background: #f7f8fc;
+  padding: 8px 10px;
+  text-align: left;
+  font-size: 10px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.8px; color: var(--muted);
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+thead th.r { text-align: right; }
+thead th.c { text-align: center; }
+tbody td {
+  padding: 8px 10px;
+  font-size: 12px;
+  border-bottom: 1px solid #f0f2f7;
+  vertical-align: middle;
+  color: var(--text);
+}
+tbody td.r { text-align: right; font-variant-numeric: tabular-nums; }
+tbody td.c { text-align: center; }
+tbody tr:last-child td { border-bottom: none; }
+tbody tr:hover { background: #f9fafd; }
+tfoot td {
+  padding: 8px 10px;
+  font-size: 12px; font-weight: 700;
+  border-top: 2px solid var(--border);
+  background: #f7f8fc;
+}
+tfoot td.r { text-align: right; }
+
+/* ── BADGES ── */
+.tipo-badge {
+  display: inline-block; padding: 2px 8px; border-radius: 20px;
+  font-size: 10px; font-weight: 600;
+}
+.tipo-hab  { background: #e8f4fd; color: #0078d4; }
+.tipo-ine  { background: #eff6fb; color: #005a9e; }
+.tipo-evo  { background: #e6f4ea; color: #107c10; }
+.tipo-tra  { background: #fdf2e7; color: #ca5010; }
+
+.prio-dot {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 20px; height: 20px; border-radius: 50%;
+  font-size: 10px; font-weight: 700; color: #fff;
+}
+.prio-1 { background: #a4262c; }
+.prio-2 { background: #ca5010; }
+.prio-3 { background: #797673; }
+
+.nivel-bar-wrap { display: flex; align-items: center; gap: 5px; }
+.nivel-bar { display: flex; gap: 2px; }
+.nivel-seg {
+  width: 8px; height: 8px; border-radius: 1px;
+  background: var(--border);
+}
+.nivel-seg.on { background: var(--accent); }
+
+.val-pos { color: var(--green); font-weight: 600; }
+.val-neg { color: var(--red); font-weight: 600; }
+
+/* ── YEAR TOGGLE ── */
+.year-toggle { display: flex; gap: 4px; }
+.ytbtn {
+  border: 1px solid var(--border);
+  background: var(--bg);
+  padding: 2px 8px; border-radius: 3px;
+  font-size: 10px; font-weight: 600;
+  cursor: pointer; font-family: var(--font);
+  color: var(--muted); transition: all 0.12s;
+}
+.ytbtn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+/* ── FOOTER ── */
+.footer {
+  margin: 4px 24px 16px;
+  padding: 8px 0 0;
+  border-top: 1px solid var(--border);
+  display: flex; justify-content: space-between;
+  font-size: 10px; color: var(--muted);
+}
+.footer span { color: var(--accent); font-weight: 600; }
+
+/* ── BOTTOM GRID ── */
+.bottom-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 14px; }
+
+/* ── EMPTY ── */
+.empty-msg { text-align: center; padding: 30px; color: var(--muted); font-size: 12px; }
 </style>
 </head>
 <body>
 
-<div class="header">
-  <div class="header-left">
-    <div class="logo-mark">PV</div>
-    <div>
-      <div class="header-title">Portfolio PMO Dashboard</div>
-      <div class="header-sub">Biscuit International — Project Advantage</div>
+<!-- TOP BAR -->
+<div class="topbar">
+  <div class="topbar-left">
+    <div class="topbar-brand">
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+        <rect width="8" height="8" rx="1" fill="white" opacity="0.9"/>
+        <rect x="10" width="8" height="8" rx="1" fill="white" opacity="0.6"/>
+        <rect y="10" width="8" height="8" rx="1" fill="white" opacity="0.6"/>
+        <rect x="10" y="10" width="8" height="8" rx="1" fill="white" opacity="0.3"/>
+      </svg>
+      Planview Project Advantage
     </div>
+    <div class="topbar-sep">|</div>
+    <div class="topbar-title">Porfolio de Iniciativas — PAPEGO</div>
   </div>
-  <div class="header-right">
-    <div class="period-badge" id="current-date">Chargement...</div>
-    <div class="period-badge">LRP 2024–2028</div>
+  <div class="topbar-right">
+    <div class="chip">Actualizado: May 2026</div>
+    <div class="chip">Fuente: PAPEGO Excel</div>
   </div>
 </div>
 
-<div class="selector-bar" id="selector"></div>
+<!-- SLICER BAR -->
+<div class="slicer-bar" id="slicerBar">
+  <div class="slicer-group">
+    <span class="slicer-label">División</span>
+    <button class="slicer-btn active" data-dim="div" data-val="ALL">Todas</button>
+    <button class="slicer-btn" data-dim="div" data-val="Industrial">Industrial</button>
+    <button class="slicer-btn" data-dim="div" data-val="Digital">Digital</button>
+  </div>
+  <div class="slicer-sep"></div>
+  <div class="slicer-group">
+    <span class="slicer-label">Sector</span>
+    <button class="slicer-btn active" data-dim="sector" data-val="ALL">Todos</button>
+    <button class="slicer-btn" data-dim="sector" data-val="Teleco">Teleco</button>
+    <button class="slicer-btn" data-dim="sector" data-val="Energía">Energía</button>
+    <button class="slicer-btn" data-dim="sector" data-val="Textil">Textil</button>
+    <button class="slicer-btn" data-dim="sector" data-val="Banca">Banca</button>
+    <button class="slicer-btn" data-dim="sector" data-val="Automoción">Automoción</button>
+    <button class="slicer-btn" data-dim="sector" data-val="Transversal">Transversal</button>
+  </div>
+  <div class="slicer-sep"></div>
+  <div class="slicer-group">
+    <span class="slicer-label">Tipo</span>
+    <button class="slicer-btn active" data-dim="tipo" data-val="ALL">Todos</button>
+    <button class="slicer-btn" data-dim="tipo" data-val="Habilitadora">Habilitadora</button>
+    <button class="slicer-btn" data-dim="tipo" data-val="Evolutivo">Evolutivo</button>
+    <button class="slicer-btn" data-dim="tipo" data-val="Transformadora">Transformadora</button>
+    <button class="slicer-btn" data-dim="tipo" data-val="Inercial">Inercial</button>
+  </div>
+  <button class="reset-btn" id="resetBtn">↺ Reset filtros</button>
+</div>
 
+<!-- MAIN -->
 <div class="main">
-  <div class="kpi-row" id="kpi-row"></div>
-  <div id="alert-zone"></div>
-  <div class="charts-grid">
-    <div class="chart-card">
-      <div class="chart-title">Courbe en S — Budget vs Réalisé vs Engagé <span style="font-size:10px;color:var(--muted);font-family:var(--font-mono)" id="s-curve-legend"></span></div>
-      <div class="chart-desc" id="s-curve-desc">Cumul mensuel (k€)</div>
-      <div class="chart-wrap" style="height:200px"><canvas id="sCurveChart"></canvas></div>
-    </div>
-    <div class="chart-card">
-      <div class="chart-title">Earned Value</div>
-      <div class="chart-desc" id="ev-desc">CPI · SPI · Avancement physique</div>
-      <div class="gauge-wrap">
-        <canvas id="gaugeChart" width="160" height="80"></canvas>
-        <div class="gauge-val" id="cpi-val">—</div>
-        <div class="gauge-label">Cost Performance Index</div>
-        <div class="gauge-row">
-          <div class="gauge-mini">
-            <div class="gauge-mini-label">SPI</div>
-            <div class="gauge-mini-val" id="spi-val">—</div>
-          </div>
-          <div class="gauge-mini">
-            <div class="gauge-mini-label">Avancement physique</div>
-            <div class="gauge-mini-val" id="phys-val">—</div>
-          </div>
+
+  <!-- KPI ROW -->
+  <div class="kpi-row" id="kpiRow"></div>
+
+  <!-- CHARTS ROW -->
+  <div class="mid-grid">
+    <div class="card">
+      <div class="card-hd">
+        <span class="card-title">CAPEX por Año (M€)</span>
+        <div class="year-toggle" id="yearToggle">
+          <button class="ytbtn active" data-years="all">2026–30</button>
+          <button class="ytbtn" data-years="26">2026</button>
+          <button class="ytbtn" data-years="27">2027</button>
         </div>
+      </div>
+      <div class="chart-wrap"><canvas id="capexChart"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-hd"><span class="card-title">IN Planificados por Sector (M€)</span></div>
+      <div class="chart-wrap"><canvas id="sectorChart"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-hd"><span class="card-title">Distribución por Tipo Iniciativa</span></div>
+      <div class="chart-wrap"><canvas id="tipoChart"></canvas></div>
+    </div>
+  </div>
+
+  <!-- BOTTOM: TABLE + EVOLUTION -->
+  <div class="bottom-grid">
+    <!-- Main table -->
+    <div class="table-card">
+      <div class="card-hd">
+        <span class="card-title">Detalle de Iniciativas</span>
+        <span class="card-count" id="tableCount"></span>
+      </div>
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>P</th>
+              <th>Iniciativa</th>
+              <th>Responsable</th>
+              <th>División</th>
+              <th>Sector</th>
+              <th>Tipo</th>
+              <th class="r">IN26 (M€)</th>
+              <th class="r">CAPEX26 (M€)</th>
+              <th class="r">CAPEX Total (M€)</th>
+              <th class="r">IN Total (M€)</th>
+              <th class="c">Nivel</th>
+              <th>Fecha Límite</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody"></tbody>
+          <tfoot id="tableFoot"></tfoot>
+        </table>
+      </div>
+    </div>
+
+    <!-- Evolution chart -->
+    <div class="card">
+      <div class="card-hd"><span class="card-title">Evolución IN + CAPEX (2026–2030)</span></div>
+      <div class="chart-wrap" style="height:220px"><canvas id="evoChart"></canvas></div>
+      <div style="margin-top:12px; border-top:1px solid var(--border); padding-top:10px;">
+        <div id="topInit" style="font-size:11px;"></div>
       </div>
     </div>
   </div>
-  <div class="charts-grid">
-    <div class="chart-card">
-      <div class="chart-title">Cash Burnrate mensuel <span style="font-size:10px;color:var(--accent);font-family:var(--font-mono)" id="burnrate-alert-label"></span></div>
-      <div class="chart-desc">Décaissements réels vs seuil planifié (k€/mois)</div>
-      <div class="chart-wrap" style="height:160px"><canvas id="burnrateChart"></canvas></div>
-    </div>
-    <div class="chart-card" style="grid-column: span 1;">
-      <div class="chart-title">Avancement par phase (Stage & Gates)</div>
-      <div class="chart-desc" id="phase-project-name">—</div>
-      <table class="phase-table" id="phase-table"></table>
-    </div>
-  </div>
+
 </div>
 
+<!-- FOOTER -->
 <div class="footer">
-  <span>Données actualisées en temps réel via <span class="pv-badge">Project Advantage</span></span>
-  <span>Export Power BI · SAP FICO (prévu) · Hanaplan (prévu)</span>
+  <div>Fuente de datos: <span>PAPEGO_Ejemplo_vS_PlanView.xlsx</span> · Planview Project Advantage Demo</div>
+  <div id="footerStats"></div>
 </div>
 
 <script>
-const projects = [
-  {
-    id: "capex-bcn",
-    name: "CAPEX — Ligne Barcelone",
-    type: "CAPEX",
-    color: "#e63946",
-    cluster: "Europe Sud",
-    budget: 3200,
-    status: "En cours — Alerte burnrate",
-    alertMsg: "<strong>Alerte burnrate</strong> : décaissement mars +38% vs planifié. Paiement fournisseur équipement anticipé. Impact sur trésorerie T2.",
-    hasAlert: true,
-    kpis: {
-      budget: "3 200 k€", engage: "2 140 k€", realise: "1 890 k€",
-      avancement: "52%", reste: "1 310 k€"
-    },
-    cpi: 0.88, spi: 0.94, phys: 52,
-    sCurve: {
-      labels: ["Jan","Fév","Mar","Avr","Mai","Jun","Jul","Aoû","Sep","Oct","Nov","Déc"],
-      planned:  [0,180,420,720,1050,1420,1780,2100,2430,2720,2980,3200],
-      earned:   [0,165,380,640,960,1310,1660,1890,null,null,null,null],
-      actual:   [0,190,450,720,1080,1420,1760,1890,null,null,null,null],
-    },
-    burnrate: {
-      labels: ["Jan","Fév","Mar","Avr","Mai","Jun","Jul","Aoû"],
-      planned: [180,240,300,300,330,370,360,320],
-      actual:  [190,260,415,280,300,null,null,null],
-    },
-    phases: [
-      {name:"Gate 0 — Faisabilité", prog:100, status:"done", fin:"Jan 2025"},
-      {name:"Gate 1 — Business case", prog:100, status:"done", fin:"Mar 2025"},
-      {name:"Gate 2 — Ingénierie détail", prog:100, status:"done", fin:"Jun 2025"},
-      {name:"Gate 3 — Procurement", prog:78, status:"warn", fin:"Nov 2025 (retard)"},
-      {name:"Gate 4 — Installation", prog:0, status:"pending", fin:"Mar 2026"},
-      {name:"Gate 5 — Réception", prog:0, status:"pending", fin:"Jun 2026"},
-    ]
-  },
-  {
-    id: "it-erp",
-    name: "IT — Migration ERP Europe",
-    type: "IT",
-    color: "#4cc9f0",
-    cluster: "Transverse",
-    budget: 1850,
-    status: "Dans les délais",
-    alertMsg: null,
-    hasAlert: false,
-    kpis: {
-      budget: "1 850 k€", engage: "980 k€", realise: "860 k€",
-      avancement: "46%", reste: "990 k€"
-    },
-    cpi: 1.02, spi: 1.01, phys: 46,
-    sCurve: {
-      labels: ["Jan","Fév","Mar","Avr","Mai","Jun","Jul","Aoû","Sep","Oct","Nov","Déc"],
-      planned:  [0,100,240,420,620,850,1060,1280,1490,1650,1780,1850],
-      earned:   [0,105,252,438,640,870,1060,null,null,null,null,null],
-      actual:   [0,100,245,430,625,855,860,null,null,null,null,null],
-    },
-    burnrate: {
-      labels: ["Jan","Fév","Mar","Avr","Mai","Jun","Jul"],
-      planned: [100,140,180,200,230,210,210],
-      actual:  [100,145,185,195,235,205,null],
-    },
-    phases: [
-      {name:"Phase 1 — Cadrage & spec", prog:100, status:"done", fin:"Fév 2025"},
-      {name:"Phase 2 — Paramétrage SAP", prog:100, status:"done", fin:"Avr 2025"},
-      {name:"Phase 3 — Recette & tests", prog:85, status:"active", fin:"Sep 2025"},
-      {name:"Phase 4 — Formation", prog:10, status:"pending", fin:"Nov 2025"},
-      {name:"Phase 5 — Go-live cluster FR", prog:0, status:"pending", fin:"Déc 2025"},
-    ]
-  },
-  {
-    id: "transfo-supply",
-    name: "Transfo — Supply Chain FR",
-    type: "Transformation",
-    color: "#2dd4a0",
-    cluster: "France",
-    budget: 680,
-    status: "Dans les délais",
-    alertMsg: null,
-    hasAlert: false,
-    kpis: {
-      budget: "680 k€", engage: "210 k€", realise: "185 k€",
-      avancement: "27%", reste: "495 k€"
-    },
-    cpi: 1.05, spi: 0.98, phys: 27,
-    sCurve: {
-      labels: ["Jan","Fév","Mar","Avr","Mai","Jun","Jul","Aoû","Sep","Oct","Nov","Déc"],
-      planned:  [0,40,95,175,260,360,450,530,590,630,660,680],
-      earned:   [0,42,98,178,null,null,null,null,null,null,null,null],
-      actual:   [0,40,92,185,null,null,null,null,null,null,null,null],
-    },
-    burnrate: {
-      labels: ["Jan","Fév","Mar","Avr"],
-      planned: [40,55,80,85],
-      actual:  [40,52,93,null],
-    },
-    phases: [
-      {name:"Diagnostic & cartographie", prog:100, status:"done", fin:"Fév 2025"},
-      {name:"Définition cible & roadmap", prog:100, status:"done", fin:"Mar 2025"},
-      {name:"Pilote site Amiens", prog:35, status:"active", fin:"Jul 2025"},
-      {name:"Déploiement national", prog:0, status:"pending", fin:"Nov 2025"},
-    ]
-  },
-  {
-    id: "orga-cluster",
-    name: "Orga — Cluster Europe Est",
-    type: "Organisation",
-    color: "#a78bfa",
-    cluster: "Europe Est",
-    budget: 420,
-    status: "Risque délai",
-    alertMsg: "<strong>Risque délai</strong> : ressources RH partagées avec projet IT ERP. Décalage potentiel Gate 2 de 6 semaines.",
-    hasAlert: true,
-    kpis: {
-      budget: "420 k€", engage: "88 k€", realise: "72 k€",
-      avancement: "17%", reste: "348 k€"
-    },
-    cpi: 0.95, spi: 0.82, phys: 17,
-    sCurve: {
-      labels: ["Jan","Fév","Mar","Avr","Mai","Jun","Jul","Aoû","Sep","Oct","Nov","Déc"],
-      planned:  [0,30,75,140,210,280,340,385,405,415,420,420],
-      earned:   [0,25,62,118,null,null,null,null,null,null,null,null],
-      actual:   [0,28,68,72,null,null,null,null,null,null,null,null],
-    },
-    burnrate: {
-      labels: ["Jan","Fév","Mar","Avr"],
-      planned: [30,45,65,70],
-      actual:  [28,40,4,null],
-    },
-    phases: [
-      {name:"Gate 0 — Diagnostic org.", prog:100, status:"done", fin:"Jan 2025"},
-      {name:"Gate 1 — Design cible", prog:72, status:"warn", fin:"Mai 2025 (risque)"},
-      {name:"Gate 2 — Validation CODIR", prog:0, status:"pending", fin:"Jun 2025"},
-      {name:"Gate 3 — Déploiement cluster", prog:0, status:"pending", fin:"Oct 2025"},
-    ]
-  }
+// ─── DATA ───────────────────────────────────────────────────────────────
+const DATA = [
+  {"id":"INI#D.00.01","div":"Industrial","sector":"Teleco","marca":"Nexora","tipo":"Habilitadora","linea":"Soluciones Software","resp":"Laura Méndez","prio":1,"nivel":5,"desc":"Optimización de Procesos Digitales","fecha":"Q1 2028","in26":2.185,"in27":3.194,"in28":3.686,"in29":4.246,"in30":0.761,"mob26":0.383,"capex26":2.223,"capex27":0.552,"capex28":1.843,"capex29":2.913,"capex30":0.627},
+  {"id":"INI#D.00.02","div":"Industrial","sector":"Teleco","marca":"Nexora","tipo":"Habilitadora","linea":"Soluciones Software","resp":"Javier Ortega","prio":2,"nivel":2,"desc":"Ajustes en Diseño Digital","fecha":"Q4 2030","in26":1.325,"in27":2.444,"in28":2.552,"in29":2.814,"in30":1.128,"mob26":0.157,"capex26":1.622,"capex27":1.874,"capex28":1.162,"capex29":0.679,"capex30":0.235},
+  {"id":"INI#D.00.03","div":"Industrial","sector":"Transversal","marca":"Nexora","tipo":"Inercial","linea":"Plataformas","resp":"Marta Castillo","prio":2,"nivel":5,"desc":"Migrar Aplicaciones Críticas","fecha":"Q2 2028","in26":3.234,"in27":4.770,"in28":2.481,"in29":0.655,"in30":1.871,"mob26":0.110,"capex26":0.289,"capex27":2.444,"capex28":2.084,"capex29":1.536,"capex30":0.850},
+  {"id":"INI#D.00.04","div":"Industrial","sector":"Transversal","marca":"Zyphera","tipo":"Habilitadora","linea":"Plataformas","resp":"Alejandro Torres","prio":2,"nivel":2,"desc":"Automatización Proc. Operativos","fecha":"Q3 2028","in26":3.481,"in27":2.960,"in28":3.191,"in29":1.382,"in30":3.988,"mob26":0.159,"capex26":1.608,"capex27":2.912,"capex28":2.695,"capex29":0.357,"capex30":1.043},
+  {"id":"INI#D.00.05","div":"Industrial","sector":"Energía","marca":"Zyphera","tipo":"Inercial","linea":"Dispositivos","resp":"Carmen Ruiz","prio":1,"nivel":1,"desc":"Mantenimiento de Flujos","fecha":"Q1 2027","in26":2.249,"in27":2.105,"in28":4.941,"in29":0.525,"in30":1.134,"mob26":0.145,"capex26":2.503,"capex27":1.674,"capex28":0.316,"capex29":0.676,"capex30":2.150},
+  {"id":"INI#D.00.06","div":"Digital","sector":"Energía","marca":"Nexora","tipo":"Habilitadora","linea":"Ciberseguridad","resp":"Daniel Hernández","prio":1,"nivel":5,"desc":"Fortalecimiento Ciberseguridad","fecha":"Q1 2028","in26":3.781,"in27":2.113,"in28":1.899,"in29":3.369,"in30":3.305,"mob26":0.320,"capex26":0.315,"capex27":2.603,"capex28":0.284,"capex29":2.216,"capex30":1.469},
+  {"id":"INI#D.00.07","div":"Digital","sector":"Textil","marca":"Veltrix","tipo":"Habilitadora","linea":"Ciberseguridad","resp":"Patricia Gómez","prio":3,"nivel":5,"desc":"Seguimiento de Resultados","fecha":"Q1 2028","in26":1.038,"in27":3.026,"in28":0.986,"in29":1.915,"in30":2.852,"mob26":0.300,"capex26":2.306,"capex27":1.532,"capex28":0.174,"capex29":1.946,"capex30":2.732},
+  {"id":"INI#D.00.08","div":"Digital","sector":"Textil","marca":"Veltrix","tipo":"Habilitadora","linea":"Ciberseguridad","resp":"Sergio Navarro","prio":3,"nivel":3,"desc":"Medición de Desempeño","fecha":"Q3 2026","in26":1.622,"in27":1.530,"in28":3.350,"in29":1.340,"in30":1.225,"mob26":0.194,"capex26":2.291,"capex27":0.940,"capex28":2.444,"capex29":2.431,"capex30":1.664},
+  {"id":"INI#G.00.01","div":"Digital","sector":"Banca","marca":"Zyphera","tipo":"Evolutivo","linea":"Herramientas","resp":"Teresa Ramos","prio":1,"nivel":1,"desc":"Capacitación de Usuarios","fecha":"Q4 2027","in26":4.133,"in27":0.995,"in28":2.798,"in29":1.039,"in30":4.181,"mob26":0.364,"capex26":1.022,"capex27":1.339,"capex28":0.120,"capex29":0.744,"capex30":2.834},
+  {"id":"INI#G.00.02","div":"Digital","sector":"Banca","marca":"Nexora","tipo":"Transformadora","linea":"Ciberseguridad","resp":"Víctor Lozano","prio":2,"nivel":5,"desc":"Activación de Endpoints","fecha":"Q2 2029","in26":1.954,"in27":2.136,"in28":1.782,"in29":2.762,"in30":1.633,"mob26":0.232,"capex26":2.139,"capex27":2.891,"capex28":0.973,"capex29":1.868,"capex30":0.908},
+  {"id":"INI#G.00.03","div":"Digital","sector":"Automoción","marca":"Veltryx","tipo":"Evolutivo","linea":"Herramientas","resp":"Nuria Campos","prio":1,"nivel":5,"desc":"Depuración y Calidad de Datos","fecha":"Q2 2029","in26":4.587,"in27":2.703,"in28":3.777,"in29":3.351,"in30":3.525,"mob26":0.134,"capex26":0.520,"capex27":0.802,"capex28":0.789,"capex29":1.934,"capex30":0.362},
+  {"id":"INI#G.00.04","div":"Industrial","sector":"Automoción","marca":"Nexora","tipo":"Evolutivo","linea":"Servicios","resp":"Daniel Pérez","prio":1,"nivel":4,"desc":"Control Financiero Avanzado","fecha":"Q2 2030","in26":4.259,"in27":0.683,"in28":3.403,"in29":2.240,"in30":0.575,"mob26":0.162,"capex26":0.641,"capex27":2.065,"capex28":0.757,"capex29":2.104,"capex30":0.499}
 ];
 
-let currentIdx = 0;
-let sCurveChart, burnrateChart, gaugeChart;
+// ─── STATE ───────────────────────────────────────────────────────────────
+const filters = { div: 'ALL', sector: 'ALL', tipo: 'ALL' };
+let capexMode = 'all';
 
-function fmt(n){ return n !== null ? n.toLocaleString('fr-FR') : ''; }
+// Chart instances
+let capexChartInst, sectorChartInst, tipoChartInst, evoChartInst;
 
-function renderSelector(){
-  const bar = document.getElementById('selector');
-  bar.innerHTML = '';
-  projects.forEach((p,i)=>{
-    const btn = document.createElement('button');
-    btn.className = 'proj-btn' + (i===currentIdx?' active':'');
-    btn.innerHTML = `<span class="proj-dot" style="background:${p.color}"></span>
-      <span>${p.name}</span>
-      <span class="proj-type">${p.cluster}</span>`;
-    btn.onclick = ()=>{ currentIdx=i; render(); };
-    bar.appendChild(btn);
-  });
+// ─── HELPERS ─────────────────────────────────────────────────────────────
+const fmt = v => v.toFixed(2);
+const fmtM = v => v.toFixed(1) + 'M€';
+
+function filtered() {
+  return DATA.filter(d =>
+    (filters.div    === 'ALL' || d.div    === filters.div)    &&
+    (filters.sector === 'ALL' || d.sector === filters.sector) &&
+    (filters.tipo   === 'ALL' || d.tipo   === filters.tipo)
+  );
 }
 
-function renderKPIs(){
-  const p = projects[currentIdx];
-  const kpis = [
-    {label:"Budget total", val:p.kpis.budget, sub:"Enveloppe allouée", delta:null},
-    {label:"Montant engagé", val:p.kpis.engage, sub:"Commandes & contrats", delta:null},
-    {label:"Réalisé (coût réel)", val:p.kpis.realise, sub:"Dépenses comptabilisées", delta:null},
-    {label:"Avancement physique", val:p.kpis.avancement, sub:"Jalons validés", delta: p.cpi<1?{label:"CPI "+p.cpi.toFixed(2), cls:"neg"}:{label:"CPI "+p.cpi.toFixed(2), cls:"pos"}},
-    {label:"Reste à dépenser", val:p.kpis.reste, sub:"Budget disponible", delta: p.spi<0.9?{label:"SPI "+p.spi.toFixed(2),cls:"warn"}:null},
-  ];
-  const row = document.getElementById('kpi-row');
-  row.innerHTML = kpis.map(k=>`
+function inTotal(d) { return d.in26+d.in27+d.in28+d.in29+d.in30; }
+function capexTotal(d) { return d.capex26+d.capex27+d.capex28+d.capex29+d.capex30; }
+
+function tipoClass(t) {
+  return {Habilitadora:'tipo-hab',Inercial:'tipo-ine',Evolutivo:'tipo-evo',Transformadora:'tipo-tra'}[t]||'tipo-hab';
+}
+function prioClass(p) { return p===1?'prio-1':p===2?'prio-2':'prio-3'; }
+function nivelSegs(n) {
+  let s='';
+  for(let i=1;i<=5;i++) s+=`<div class="nivel-seg${i<=n?' on':''}"></div>`;
+  return `<div class="nivel-bar-wrap"><div class="nivel-bar">${s}</div></div>`;
+}
+
+const COLORS = ['#0078d4','#00b4d8','#106ebe','#48cae4','#0096c7','#023e8a','#0077b6','#90e0ef'];
+const TIPO_COLORS = { Habilitadora:'#0078d4', Inercial:'#005a9e', Evolutivo:'#107c10', Transformadora:'#ca5010' };
+
+// ─── RENDER FUNCTIONS ────────────────────────────────────────────────────
+function renderKPIs(data) {
+  const totalIn = data.reduce((s,d)=>s+inTotal(d),0);
+  const totalCapex = data.reduce((s,d)=>s+capexTotal(d),0);
+  const totalCapex26 = data.reduce((s,d)=>s+d.capex26,0);
+  const totalIn26 = data.reduce((s,d)=>s+d.in26,0);
+  const prio1 = data.filter(d=>d.prio===1).length;
+
+  document.getElementById('kpiRow').innerHTML = `
     <div class="kpi-card">
-      <div class="kpi-label">${k.label}</div>
-      <div class="kpi-val">${k.val}</div>
-      <div class="kpi-sub">${k.sub}${k.delta?` <span class="delta ${k.delta.cls}">${k.delta.label}</span>`:''}</div>
-    </div>`).join('');
+      <div class="kpi-label">Iniciativas</div>
+      <div class="kpi-val">${data.length}</div>
+      <div class="kpi-sub">P1: ${prio1} · P2: ${data.filter(d=>d.prio===2).length} · P3: ${data.filter(d=>d.prio>=3).length}</div>
+      <span class="kpi-badge badge-b">${[...new Set(data.map(d=>d.sector))].length} sectores</span>
+    </div>
+    <div class="kpi-card g">
+      <div class="kpi-label">IN Total Planificado</div>
+      <div class="kpi-val">${fmt(totalIn)}<sub> M€</sub></div>
+      <div class="kpi-sub">2026–2030 acumulado</div>
+    </div>
+    <div class="kpi-card a">
+      <div class="kpi-label">CAPEX Total Plan.</div>
+      <div class="kpi-val">${fmt(totalCapex)}<sub> M€</sub></div>
+      <div class="kpi-sub">2026–2030 acumulado</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">IN 2026</div>
+      <div class="kpi-val">${fmt(totalIn26)}<sub> M€</sub></div>
+      <div class="kpi-sub">${(totalIn26/totalIn*100).toFixed(0)}% del plan total</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">CAPEX 2026</div>
+      <div class="kpi-val">${fmt(totalCapex26)}<sub> M€</sub></div>
+      <div class="kpi-sub">${(totalCapex26/totalCapex*100).toFixed(0)}% del plan total</div>
+    </div>
+  `;
 }
 
-function renderAlert(){
-  const p = projects[currentIdx];
-  const z = document.getElementById('alert-zone');
-  if(p.hasAlert){
-    z.innerHTML = `<div class="alert-banner"><div class="alert-dot"></div><div class="alert-text">${p.alertMsg}</div></div>`;
-  } else { z.innerHTML=''; }
+function renderTable(data) {
+  const body = document.getElementById('tableBody');
+  const foot = document.getElementById('tableFoot');
+  document.getElementById('tableCount').textContent = `${data.length} iniciativas`;
+
+  if (!data.length) {
+    body.innerHTML = `<tr><td colspan="12" class="empty-msg">Sin resultados para los filtros seleccionados</td></tr>`;
+    foot.innerHTML = '';
+    return;
+  }
+
+  const sorted = [...data].sort((a,b)=>a.prio-b.prio||b.in26-a.in26);
+  body.innerHTML = sorted.map(d => `
+    <tr>
+      <td class="c"><span class="prio-dot ${prioClass(d.prio)}">${d.prio}</span></td>
+      <td><div style="font-weight:600;font-size:12px">${d.desc}</div><div style="font-size:10px;color:var(--muted)">${d.id}</div></td>
+      <td>${d.resp}</td>
+      <td><span style="font-size:11px;color:var(--muted)">${d.div}</span></td>
+      <td>${d.sector}</td>
+      <td><span class="tipo-badge ${tipoClass(d.tipo)}">${d.tipo}</span></td>
+      <td class="r">${fmt(d.in26)}</td>
+      <td class="r">${fmt(d.capex26)}</td>
+      <td class="r" style="font-weight:600">${fmt(capexTotal(d))}</td>
+      <td class="r" style="font-weight:600;color:var(--green)">${fmt(inTotal(d))}</td>
+      <td class="c">${nivelSegs(d.nivel)}</td>
+      <td style="font-size:11px">${d.fecha}</td>
+    </tr>
+  `).join('');
+
+  const tIn = data.reduce((s,d)=>s+inTotal(d),0);
+  const tC = data.reduce((s,d)=>s+capexTotal(d),0);
+  const tIn26 = data.reduce((s,d)=>s+d.in26,0);
+  const tC26 = data.reduce((s,d)=>s+d.capex26,0);
+  foot.innerHTML = `<tr>
+    <td colspan="6" class="r" style="font-size:11px;color:var(--muted)">TOTAL (${data.length} iniciativas)</td>
+    <td class="r">${fmt(tIn26)}</td>
+    <td class="r">${fmt(tC26)}</td>
+    <td class="r">${fmt(tC)}</td>
+    <td class="r" style="color:var(--green)">${fmt(tIn)}</td>
+    <td colspan="2"></td>
+  </tr>`;
+
+  // Top init box
+  const top3 = [...data].sort((a,b)=>inTotal(b)-inTotal(a)).slice(0,3);
+  document.getElementById('topInit').innerHTML = `
+    <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:var(--muted);margin-bottom:8px">Top IN Total</div>
+    ${top3.map((d,i)=>`
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+        <div>
+          <span style="color:var(--accent);font-weight:700;margin-right:6px">#${i+1}</span>
+          <span style="font-size:11px">${d.desc}</span>
+        </div>
+        <span style="font-weight:700;font-size:12px;color:var(--green)">${fmt(inTotal(d))}M€</span>
+      </div>
+      <div style="height:4px;background:var(--border);border-radius:2px;margin-bottom:8px">
+        <div style="height:100%;width:${(inTotal(d)/inTotal(top3[0])*100).toFixed(0)}%;background:var(--accent);border-radius:2px"></div>
+      </div>
+    `).join('')}
+  `;
 }
 
-function renderSCurve(){
-  const p = projects[currentIdx];
-  const d = p.sCurve;
-  if(sCurveChart) sCurveChart.destroy();
-  const ctx = document.getElementById('sCurveChart').getContext('2d');
-  sCurveChart = new Chart(ctx,{
+function destroyChart(inst) { if (inst) inst.destroy(); }
+
+function renderCapexChart(data) {
+  destroyChart(capexChartInst);
+  const ctx = document.getElementById('capexChart').getContext('2d');
+  const items = [...data].sort((a,b)=>b.capex26-a.capex26);
+  const labels = items.map(d => d.desc.length>20?d.desc.slice(0,20)+'…':d.desc);
+
+  let datasets;
+  if (capexMode === 'all') {
+    datasets = [
+      { label:'2026', data: items.map(d=>d.capex26), backgroundColor:'#0078d4', stack:'s' },
+      { label:'2027', data: items.map(d=>d.capex27), backgroundColor:'#48cae4', stack:'s' },
+      { label:'2028', data: items.map(d=>d.capex28), backgroundColor:'#00b4d8', stack:'s' },
+      { label:'2029', data: items.map(d=>d.capex29), backgroundColor:'#90e0ef', stack:'s' },
+      { label:'2030', data: items.map(d=>d.capex30), backgroundColor:'#caf0f8', stack:'s' },
+    ];
+  } else if (capexMode === '26') {
+    datasets = [{ label:'CAPEX 2026', data: items.map(d=>d.capex26), backgroundColor:'#0078d4', borderRadius:2 }];
+  } else {
+    datasets = [{ label:'CAPEX 2027', data: items.map(d=>d.capex27), backgroundColor:'#48cae4', borderRadius:2 }];
+  }
+
+  capexChartInst = new Chart(ctx, {
+    type: 'bar',
+    data: { labels, datasets },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: capexMode==='all', labels:{ font:{size:10,family:'DM Sans'}, color:'#8993ab', boxWidth:10 } }, tooltip: baseTooltip() },
+      scales: {
+        x: { stacked: capexMode==='all', ticks:{font:{size:9,family:'DM Sans'},color:'#8993ab',maxRotation:35}, grid:{display:false} },
+        y: { stacked: capexMode==='all', ticks:{font:{size:9,family:'DM Sans'},color:'#8993ab',callback:v=>v+'M€'}, grid:{color:'#f0f2f7'} }
+      }
+    }
+  });
+}
+
+function renderSectorChart(data) {
+  destroyChart(sectorChartInst);
+  const ctx = document.getElementById('sectorChart').getContext('2d');
+  const sectors = {};
+  data.forEach(d => {
+    sectors[d.sector] = (sectors[d.sector]||0) + (d.in26+d.in27+d.in28+d.in29+d.in30);
+  });
+  const sorted = Object.entries(sectors).sort((a,b)=>b[1]-a[1]);
+
+  sectorChartInst = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: sorted.map(s=>s[0]),
+      datasets: [{ label:'IN Total', data: sorted.map(s=>parseFloat(s[1].toFixed(2))), backgroundColor: COLORS, borderRadius:2 }]
+    },
+    options: {
+      indexAxis:'y', responsive:true, maintainAspectRatio:false,
+      plugins: { legend:{display:false}, tooltip: baseTooltip() },
+      scales: {
+        x: { ticks:{font:{size:9,family:'DM Sans'},color:'#8993ab',callback:v=>v+'M€'}, grid:{color:'#f0f2f7'} },
+        y: { ticks:{font:{size:10,family:'DM Sans'},color:'#252c3e'}, grid:{display:false} }
+      }
+    }
+  });
+}
+
+function renderTipoChart(data) {
+  destroyChart(tipoChartInst);
+  const ctx = document.getElementById('tipoChart').getContext('2d');
+  const tipos = {};
+  data.forEach(d => { tipos[d.tipo] = (tipos[d.tipo]||0)+1; });
+
+  tipoChartInst = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels: Object.keys(tipos),
+      datasets: [{ data: Object.values(tipos), backgroundColor: Object.keys(tipos).map(t=>TIPO_COLORS[t]||'#ccc'), borderWidth:2, borderColor:'#fff', hoverOffset:4 }]
+    },
+    options: {
+      responsive:true, maintainAspectRatio:false, cutout:'62%',
+      plugins: {
+        legend: { position:'right', labels:{font:{size:10,family:'DM Sans'},color:'#252c3e',boxWidth:10,padding:10} },
+        tooltip: baseTooltip()
+      }
+    }
+  });
+}
+
+function renderEvoChart(data) {
+  destroyChart(evoChartInst);
+  const ctx = document.getElementById('evoChart').getContext('2d');
+  const years = ['2026','2027','2028','2029','2030'];
+  const inY  = ['in26','in27','in28','in29','in30'].map(k=>parseFloat(data.reduce((s,d)=>s+d[k],0).toFixed(2)));
+  const capY = ['capex26','capex27','capex28','capex29','capex30'].map(k=>parseFloat(data.reduce((s,d)=>s+d[k],0).toFixed(2)));
+
+  evoChartInst = new Chart(ctx, {
     type:'line',
-    data:{
-      labels: d.labels,
-      datasets:[
-        {label:'Planifié (BCWS)', data:d.planned, borderColor:'rgba(255,255,255,0.25)',
-          backgroundColor:'rgba(255,255,255,0.04)', borderWidth:2, pointRadius:0,
-          tension:.4, fill:true, borderDash:[6,3]},
-        {label:'Earned Value (BCWP)', data:d.earned, borderColor:p.color,
-          backgroundColor:'transparent', borderWidth:2.5, pointRadius:3,
-          pointBackgroundColor:p.color, tension:.4, spanGaps:false},
-        {label:'Coût réel (ACWP)', data:d.actual, borderColor:'rgba(245,158,11,.8)',
-          backgroundColor:'transparent', borderWidth:2, pointRadius:3,
-          pointBackgroundColor:'rgba(245,158,11,.8)', tension:.4, spanGaps:false},
+    data: {
+      labels: years,
+      datasets: [
+        { label:'IN Plan (M€)', data:inY, borderColor:'#107c10', backgroundColor:'rgba(16,124,16,0.08)', fill:true, tension:0.4, pointBackgroundColor:'#107c10', pointRadius:4 },
+        { label:'CAPEX Plan (M€)', data:capY, borderColor:'#0078d4', backgroundColor:'rgba(0,120,212,0.08)', fill:true, tension:0.4, pointBackgroundColor:'#0078d4', pointRadius:4 }
       ]
     },
-    options:{
+    options: {
       responsive:true, maintainAspectRatio:false,
-      plugins:{
-        legend:{display:true, position:'top',
-          labels:{color:'rgba(0,0,0,0.55)', font:{family:'DM Mono',size:10}, boxWidth:20, padding:12}},
-        tooltip:{
-          backgroundColor:'rgba(255,255,255,0.98)', borderColor:'rgba(0,0,0,0.1)',
-          borderWidth:1, titleFont:{family:'Syne',size:12}, bodyFont:{family:'DM Mono',size:11},
-          callbacks:{label: ctx=>' '+ctx.dataset.label+': '+fmt(ctx.parsed.y)+' k€'}
-        }
-      },
-      scales:{
-        x:{grid:{color:'rgba(0,0,0,0.05)'}, ticks:{color:'rgba(0,0,0,0.55)',font:{family:'DM Mono',size:10}}},
-        y:{grid:{color:'rgba(0,0,0,0.05)'}, ticks:{color:'rgba(0,0,0,0.55)',font:{family:'DM Mono',size:10},
-          callback:v=>v.toLocaleString('fr-FR')+' k'}}
+      plugins: { legend:{labels:{font:{size:10,family:'DM Sans'},color:'#252c3e',boxWidth:12}}, tooltip:baseTooltip() },
+      scales: {
+        x:{ticks:{font:{size:10,family:'DM Sans'},color:'#8993ab'},grid:{display:false}},
+        y:{ticks:{font:{size:9,family:'DM Sans'},color:'#8993ab',callback:v=>v+'M€'},grid:{color:'#f0f2f7'}}
       }
     }
   });
 }
 
-function renderBurnrate(){
-  const p = projects[currentIdx];
-  const d = p.burnrate;
-  if(burnrateChart) burnrateChart.destroy();
-  const ctx = document.getElementById('burnrateChart').getContext('2d');
-  const alertLabel = document.getElementById('burnrate-alert-label');
-  const over = d.actual.some((v,i)=>v!==null && v > d.planned[i]*1.15);
-  alertLabel.textContent = over ? '⚠ Dépassement seuil détecté' : '';
+function baseTooltip() {
+  return {
+    backgroundColor:'#fff', borderColor:'#e1e5ef', borderWidth:1,
+    titleColor:'#252c3e', bodyColor:'#8993ab',
+    titleFont:{family:'DM Sans',size:12,weight:'600'},
+    bodyFont:{family:'DM Sans',size:11},
+    padding:10
+  };
+}
 
-  const barColors = d.actual.map((v,i)=>{
-    if(v===null) return 'rgba(0,0,0,0)';
-    return v > d.planned[i]*1.15 ? 'rgba(230,57,70,.85)' : p.color+'cc';
+function renderFooter(data) {
+  const tIn = data.reduce((s,d)=>s+inTotal(d),0);
+  const tC  = data.reduce((s,d)=>s+capexTotal(d),0);
+  document.getElementById('footerStats').innerHTML =
+    `Selección: ${data.length} iniciativas · IN Total: <span>${fmt(tIn)}M€</span> · CAPEX Total: <span>${fmt(tC)}M€</span>`;
+}
+
+function render() {
+  const data = filtered();
+  renderKPIs(data);
+  renderTable(data);
+  renderCapexChart(data);
+  renderSectorChart(data);
+  renderTipoChart(data);
+  renderEvoChart(data);
+  renderFooter(data);
+}
+
+// ─── EVENTS ──────────────────────────────────────────────────────────────
+document.getElementById('slicerBar').addEventListener('click', e => {
+  const btn = e.target.closest('.slicer-btn');
+  if (!btn) return;
+  const dim = btn.dataset.dim;
+  const val = btn.dataset.val;
+  filters[dim] = val;
+  // Toggle active within group
+  document.querySelectorAll(`[data-dim="${dim}"]`).forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  render();
+});
+
+document.getElementById('resetBtn').addEventListener('click', () => {
+  filters.div = filters.sector = filters.tipo = 'ALL';
+  document.querySelectorAll('.slicer-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.val === 'ALL');
   });
+  render();
+});
 
-  burnrateChart = new Chart(ctx,{
-    type:'bar',
-    data:{
-      labels: d.labels,
-      datasets:[
-        {label:'Seuil planifié', data:d.planned, type:'line',
-          borderColor:'rgba(0,0,0,0.18)', borderWidth:1.5, pointRadius:0,
-          borderDash:[5,4], fill:false},
-        {label:'Burnrate réel', data:d.actual,
-          backgroundColor:barColors, borderRadius:4, borderSkipped:false},
-      ]
-    },
-    options:{
-      responsive:true, maintainAspectRatio:false,
-      plugins:{
-        legend:{display:true, position:'top',
-          labels:{color:'rgba(0,0,0,0.55)', font:{family:'DM Mono',size:10}, boxWidth:20, padding:12}},
-        tooltip:{
-          backgroundColor:'rgba(255,255,255,0.98)', borderColor:'rgba(0,0,0,0.1)',
-          borderWidth:1, bodyFont:{family:'DM Mono',size:11},
-          callbacks:{label: ctx=>' '+ctx.dataset.label+': '+fmt(ctx.parsed.y)+' k€'}
-        }
-      },
-      scales:{
-        x:{grid:{color:'rgba(0,0,0,0.05)'}, ticks:{color:'rgba(0,0,0,0.55)',font:{family:'DM Mono',size:10}}},
-        y:{grid:{color:'rgba(0,0,0,0.05)'}, ticks:{color:'rgba(0,0,0,0.55)',font:{family:'DM Mono',size:10},
-          callback:v=>v+' k'}}
-      }
-    }
-  });
-}
+document.getElementById('yearToggle').addEventListener('click', e => {
+  const btn = e.target.closest('.ytbtn');
+  if (!btn) return;
+  capexMode = btn.dataset.years;
+  document.querySelectorAll('.ytbtn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderCapexChart(filtered());
+});
 
-function renderGauge(){
-  const p = projects[currentIdx];
-  if(gaugeChart) gaugeChart.destroy();
-  const ctx = document.getElementById('gaugeChart').getContext('2d');
-  const cpi = p.cpi;
-  const angle = Math.min(Math.max((cpi-0.5)/1.0, 0), 1);
-  const color = cpi>=1 ? '#2dd4a0' : cpi>=0.9 ? '#f59e0b' : '#e63946';
-
-  gaugeChart = new Chart(ctx,{
-    type:'doughnut',
-    data:{
-      datasets:[{
-        data:[angle*100, (1-angle)*100, 100],
-        backgroundColor:[color,'rgba(0,0,0,0.06)','transparent'],
-        borderWidth:0, circumference:180, rotation:270,
-      }]
-    },
-    options:{responsive:false, cutout:'78%', plugins:{legend:{display:false}, tooltip:{enabled:false}}}
-  });
-
-  document.getElementById('cpi-val').textContent = cpi.toFixed(2);
-  document.getElementById('cpi-val').style.color = color;
-  document.getElementById('spi-val').textContent = p.spi.toFixed(2);
-  document.getElementById('spi-val').style.color = p.spi>=1?'#2dd4a0':p.spi>=0.9?'#f59e0b':'#e63946';
-  document.getElementById('phys-val').textContent = p.phys+'%';
-}
-
-function renderPhases(){
-  const p = projects[currentIdx];
-  document.getElementById('phase-project-name').textContent = p.name;
-  const statusMap = {done:'s-done',active:'s-active',warn:'s-warn',pending:'s-pending'};
-  const labelMap = {done:'Terminé',active:'En cours',warn:'Attention',pending:'À venir'};
-  const table = document.getElementById('phase-table');
-  table.innerHTML = `<thead><tr><th>Phase</th><th>Prog.</th><th>Statut</th><th>Échéance</th></tr></thead><tbody>`
-    + p.phases.map(ph=>`
-      <tr>
-        <td>${ph.name}</td>
-        <td><div class="prog-bar-bg"><div class="prog-bar-fill" style="width:${ph.prog}%;background:${ph.status==='warn'?'#f59e0b':ph.status==='done'?'#2dd4a0':ph.status==='active'?'#4cc9f0':'#374151'}"></div></div></td>
-        <td><span class="status-pill ${statusMap[ph.status]}">${labelMap[ph.status]}</span></td>
-        <td style="color:var(--muted);font-family:var(--font-mono);font-size:11px">${ph.fin}</td>
-      </tr>`).join('')
-    + '</tbody>';
-}
-
-function render(){
-  renderSelector();
-  renderKPIs();
-  renderAlert();
-  renderSCurve();
-  renderBurnrate();
-  renderGauge();
-  renderPhases();
-}
-
-document.getElementById('current-date').textContent = new Date().toLocaleDateString('fr-FR',{day:'2-digit',month:'long',year:'numeric'});
+// ─── INIT ────────────────────────────────────────────────────────────────
 render();
 </script>
- <!-- POWER BI INTEGRATION GUIDE --> <div style="margin:0;padding:20px 28px 28px;background:#fff;border-top:1px solid rgba(0,0,0,0.08)">   <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:13px;color:#1a1d23;margin-bottom:4px">Intégration dans Project Advantage / Power BI</div>   <div style="font-family:'DM Mono',monospace;font-size:10px;color:#8a8f9d;margin-bottom:16px">3 options selon le contexte de démo</div>   <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px">     <div style="background:#f5f6f8;border:1px solid rgba(0,0,0,0.08);border-radius:10px;padding:14px">       <div style="font-size:10px;font-family:'DM Mono',monospace;color:#e63946;font-weight:500;margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px">Option 1 — Recommandée démo</div>       <div style="font-size:12px;font-weight:500;color:#1a1d23;margin-bottom:6px">Fichier HTML local dans navigateur</div>       <div style="font-size:11px;color:#8a8f9d;line-height:1.6">Ouvrir ce fichier dans Chrome pendant la démo. Aucune dépendance, fonctionne hors ligne, plein écran possible. Idéal pour montrer la sortie "telle que Mathieu la verrait".</div>     </div>     <div style="background:#f5f6f8;border:1px solid rgba(0,0,0,0.08);border-radius:10px;padding:14px">       <div style="font-size:10px;font-family:'DM Mono',monospace;color:#185FA5;font-weight:500;margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px">Option 2 — Intégration Power BI</div>       <div style="font-size:12px;font-weight:500;color:#1a1d23;margin-bottom:6px">Custom visual "HTML Content"</div>       <div style="font-size:11px;color:#8a8f9d;line-height:1.6">Dans Power BI Desktop : ajouter le visual <strong style="color:#1a1d23">HTML Content</strong> (AppSource). Créer une mesure DAX retournant le code HTML. Le visual le rend nativement dans le rapport .pbix.</div>     </div>     <div style="background:#f5f6f8;border:1px solid rgba(0,0,0,0.08);border-radius:10px;padding:14px">       <div style="font-size:10px;font-family:'DM Mono',monospace;color:#3B6D11;font-weight:500;margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px">Option 3 — Portail Project Advantage</div>       <div style="font-size:12px;font-weight:500;color:#1a1d23;margin-bottom:6px">Iframe dans l'application PA</div>       <div style="font-size:11px;color:#8a8f9d;line-height:1.6">Héberger ce fichier sur un serveur interne ou SharePoint. L'intégrer via iframe dans Project Advantage comme widget de tableau de bord. URL configurable par projet.</div>     </div>   </div> </div> 
 </body>
 </html>
